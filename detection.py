@@ -4,7 +4,24 @@ import os
 import platform
 import sys
 from pathlib import Path
+import torch
+import gdown
 ########################
+
+# URL Google Drive
+file_id = '1RmfNg8lC95GBqu67bI3X_mpAmyWWdWNR'
+url = f'https://drive.google.com/uc?id={file_id}'
+weights_path = 'weights/coconut_model.pt'
+
+# check if weights folder not exists
+if not os.path.exists('weights'):
+    os.makedirs('weights')
+
+# download the weights if not already downloaded
+if not os.path.isfile(weights_path):
+    print("Download the weight...")
+    gdown.download(url, weights_path, quiet=False)
+    print("Weight is downloaded successfully")
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLO root directory
@@ -22,7 +39,7 @@ from utils.torch_utils import select_device, smart_inference_mode
 import math
 import time
 opt = {
-    "weights" : "weights/coconut_model.pt",
+    "weights" : weights_path,
     "imgsz" : (640, 640),
     "conf_thres": 0.25,
     "iou_thres" : 0.45,
