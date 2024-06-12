@@ -1,2 +1,5 @@
 *_pycache_*/
-weight/*
+weights/*
+static/files/*
+.idea
+runs/detect/*
