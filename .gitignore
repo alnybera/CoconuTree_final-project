@@ -3,3 +3,4 @@ weights/*
 static/files/*
 .idea
 runs/detect/*
+static/detect/*
