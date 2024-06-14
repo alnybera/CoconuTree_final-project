@@ -48,3 +48,5 @@ pycocotools>=2.0
 flask
 wtforms
 flask_wtf
+easydict
+gdown

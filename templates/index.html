@@ -63,7 +63,6 @@
                         <nav class="menu-box">
                             <ul class="nav-menu" id="mobile-menu">
                                 <li><a href="index.html">Home</a></li>
-                                <li><a href="index.html">Team</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -112,7 +111,8 @@
         <div class="row align-items-center">
             <div class="col-lg-6 col-md-6">
                 <div class="hero-left">
-                    <h2><span class="underline">Lforem</span> <span>Ipsum Dolor</span> consectetur adipiscing</h2>
+                    <h2><span class="underline">Instant and Easy <br><span class="text-danger">Coconut Counting</span> with Deep Learning</span><br>
+                    </h2>
                     <div class="row">
                         <div class="col-xs-5 ml-4">
                             <form id="upload-form" method="POST" enctype="multipart/form-data">
@@ -128,8 +128,14 @@
                         </div>
                     </div>
 
-                    <div class="mt-2">
-                        Total Detection :
+                    <div class="mt-3">
+                        <h5 class="font-weight-bold">Realtime Statistics :</h5>
+                        <p class="tv">Frame Rate: <span id="fpsCount" class="font-weight-bold text-danger"></span></p>
+                        <p>Detected Objects: <span id="detectedObjects" class="font-weight-bold  text-danger"></span>
+                            <span class="font-weight-bold text-danger">Tree</span></p>
+                        <p class="tv">Frame Size: <span id="frameSize" class="font-weight-bold  text-danger"></span></p>
+                        <p>Inference Time: <span id="inferenceTime" class="font-weight-bold text-danger"></span></p>
+                        <p>Download the result: <span id="resultPath" class="font-weight-bold text-danger"></span></p>
                     </div>
 
                 </div>
@@ -139,8 +145,11 @@
                     <div class="tablet-container">
                         <img id="tablet-image" src="{{ url_for('static', filename='tablet.png') }}" width="680px"
                              height="500px" alt="">
-                        <img id="image-main" src="{{ url_for('detections') }}" style="max-height: 470px;max-width: 610px;width: 610px;height: 470px; object-fit: contain; background: #fff" alt="">
-                        <canvas id="main-canvas" style="max-height: 470px;max-width: 610px;width: 610px;height: 470px; object-fit: contain; background: #fff">
+                        <img id="image-main" src="{{ url_for('detections') }}"
+                             style="max-height: 470px;max-width: 610px;width: 610px;height: 470px; object-fit: contain; background: #fff"
+                             alt="">
+                        <canvas id="main-canvas"
+                                style="max-height: 470px;max-width: 610px;width: 610px;height: 470px; object-fit: contain; background: #fff">
                         </canvas>
                     </div>
                 </div>
@@ -152,33 +161,14 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <div class="companies-left">
-                    <h4>Lorem ipsum dolor sit amet, consectetur adipiscing</h4>
+                    <h4>Build ❤️ by The Woz Team at Indonesia AI Bootcamp</h4>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="companies-slider owl-carousel">
-                    <div class="single-com-slider">
-                        <a href="#"><img src="{{ url_for('static', filename='assets/img/companies-1.png') }}"
-                                         alt="companies"/></a>
-                    </div>
-                    <div class="single-com-slider">
-                        <a href="#"><img src="{{ url_for('static', filename='assets/img/companies-2.png') }}"
-                                         alt="companies"/></a>
-                    </div>
-                    <div class="single-com-slider">
-                        <a href="#"><img src="{{ url_for('static', filename='assets/img/companies-3.png') }}"
-                                         alt="companies"/></a>
-                    </div>
-                    <div class="single-com-slider">
-                        <a href="#"><img src="{{ url_for('static', filename='assets/img/companies-4.png') }}"
-                                         alt="companies"/></a>
-                    </div>
-                    <div class="single-com-slider">
-                        <a href="#"><img src="{{ url_for('static', filename='assets/img/companies-5.png') }}"
-                                         alt="companies"/></a>
-                    </div>
-                </div>
+            <div class="col-lg-6 text-center">
+                <a href="#"><img width="200px" src="{{ url_for('static', filename='assets/img/indonesia-ai.png') }}"
+                                 alt="companies"/></a>
             </div>
+        </div>
         </div>
     </footer>
 </section>
@@ -192,6 +182,30 @@
     document.getElementById('detect-icon').addEventListener('click', function () {
         document.getElementById('upload-form').submit();
     });
+
+    function fetchData() {
+        $.ajax({
+            url: '/status',
+            type: 'GET',
+            success: function (data) {
+                console.log();
+                if(data.typeFile=="image"){
+                    $('.tv').hide();
+                }else{
+                    $('.tv').show();
+                }
+                var formattedFps = parseFloat(data.fpsresult).toFixed(2);
+                $('#fpsCount').text(formattedFps + " FPS");
+                $('#detectedObjects').text(data.dcountresult);
+                $('#frameSize').text(data.fsizeresult);
+                $('#inferenceTime').text(data.inferenceTimes);
+                $('#resultPath').html("<a target='_blank' href='" + data.resultPath + "'>link</a>");
+            }
+        });
+    }
+
+
+    setInterval(fetchData, 1000);
 </script>
 <!--Jquery js-->
 <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
