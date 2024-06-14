@@ -54,18 +54,7 @@ data_deque = {}
 
 
 def classNames():
-    cocoClassNames = ["coconuts","person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
-                      "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
-                      "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella",
-                      "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite",
-                      "baseball bat",
-                      "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup",
-                      "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli",
-                      "carrot", "hot dog", "pizza", "donut", "cake", "chair", "sofa", "pottedplant", "bed",
-                      "diningtable", "toilet", "tvmonitor", "laptop", "mouse", "remote", "keyboard", "cell phone",
-                      "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
-                      "teddy bear", "hair drier", "toothbrush"
-                      ]
+    cocoClassNames = ["coconuts"]
     return cocoClassNames
 
 
@@ -76,14 +65,8 @@ inferenceTime = 0
 filePath = ""
 
 def colorLabels(classid):
-    if classid == 0:  # person
+    if classid == 0:  # coconuts
         color = (85, 45, 255)
-    elif classid == 2:  # car
-        color = (222, 82, 175)
-    elif classid == 3:  # Motorbike
-        color = (0, 204, 255)
-    elif classid == 5:  # Bus
-        color = (0, 149, 255)
     else:
         color = (200, 100, 0)
     return tuple(color)
@@ -122,7 +105,7 @@ def draw_boxes(frame, bbox_xyxy, draw_trails, identities=None, categories=None, 
                     continue
                 thickness = int(np.sqrt(64 / float(i + i)) * 1.5)
                 cv2.line(frame, data_deque[id][i - 1], data_deque[id][i], color, thickness)
-    # Menambahkan jumlah total deteksi pada frame
+
     detection_text = f"Total Detections: {int(identities[-1])}"
     cv2.putText(frame, detection_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
     return frame, int(identities[-1])
@@ -134,7 +117,7 @@ def run(
         source=ROOT / 'data/images',  # file/dir/URL/glob/screen/0(webcam)
         data=ROOT / 'data/coco.yaml',  # dataset.yaml path
         imgsz=(640, 640),  # inference size (height, width)
-        conf_thres=0.25,  # confidence threshold
+        conf_thres=0.3,  # confidence threshold
         iou_thres=0.45,  # NMS IOU threshold
         max_det=1000,  # maximum detections per image
         device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
@@ -275,7 +258,7 @@ def run(
                 frameRate += fps
 
                 if dataset.mode == 'image':
-                    cv2.imwrite(save_path, ims)
+                    cv2.imwrite(save_path, im0)
                 else:
                     if vid_path[i] != save_path:  # new video
                         vid_path[i] = save_path
