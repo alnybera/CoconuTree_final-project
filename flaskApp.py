@@ -53,6 +53,8 @@ def front():
         file.save(file_path)
         session['filePath'] = file_path
         return render_template('index.html', form=form, uploaded=True, filename=filename)
+    #remove session
+    session.pop('filePath', None)
     return render_template('index.html', form=form, uploaded=False)
 
 @app.route('/detections', methods=['GET', 'POST'])

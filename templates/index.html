@@ -118,14 +118,14 @@
                             <form id="upload-form" method="POST" enctype="multipart/form-data">
                                 {{ form.hidden_tag() }}
                                 {{ form.file(id='file', style='display: none;') }}
-                                <!--                                <span class="circle" id="upload-icon"><i class="material-icons" style="font-size: 36px; color: white;">file_upload</i></span>-->
-                                <a href="#" class="theme-btn" id="upload-icon">Upload <span class="fa fa-upload"></span></a>
+{#                                <!--                                <span class="circle" id="upload-icon"><i class="material-icons" style="font-size: 36px; color: white;">file_upload</i></span>-->#}
+                                <a href="#" class="theme-btn-orange" id="upload-icon">Upload & Play<span class="fa fa-play"></span></a>
                             </form>
                         </div>
-                        <div class="col-6">
-                            <!--                            <span class="circle blue-circle" id="detect-icon"><i class="material-icons" style="font-size: 36px; color: white;">play_arrow</i></span>-->
-                            <a href="#" id="detect-icon" class="theme-btn-orange">Play <span class="fa fa-play"></span></a>
-                        </div>
+{#                        <div class="col-6">#}
+{#                            <!--                            <span class="circle blue-circle" id="detect-icon"><i class="material-icons" style="font-size: 36px; color: white;">play_arrow</i></span>-->#}
+{#                            <a href="#" id="detect-icon" class="theme-btn-orange">Play <span class="fa fa-play"></span></a>#}
+{#                        </div>#}
                     </div>
 
                     <div class="mt-3">
@@ -133,7 +133,7 @@
                         <p class="tv">Frame Rate: <span id="fpsCount" class="font-weight-bold text-danger"></span></p>
                         <p>Detected Objects: <span id="detectedObjects" class="font-weight-bold  text-danger"></span>
                             <span class="font-weight-bold text-danger">Tree</span></p>
-                        <p class="tv">Frame Size: <span id="frameSize" class="font-weight-bold  text-danger"></span></p>
+                        {#                        <p class="tv">Frame Size: <span id="frameSize" class="font-weight-bold  text-danger"></span></p>#}
                         <p>Inference Time: <span id="inferenceTime" class="font-weight-bold text-danger"></span></p>
                         <p>Download the result: <span id="resultPath" class="font-weight-bold text-danger"></span></p>
                     </div>
@@ -179,7 +179,8 @@
         document.getElementById('file').click();
     });
 
-    document.getElementById('detect-icon').addEventListener('click', function () {
+    // Ketika file terpilih, langsung submit form
+    document.getElementById('file').addEventListener('change', function () {
         document.getElementById('upload-form').submit();
     });
 
@@ -189,15 +190,15 @@
             type: 'GET',
             success: function (data) {
                 console.log();
-                if(data.typeFile=="image"){
+                if (data.typeFile == "image") {
                     $('.tv').hide();
-                }else{
+                } else {
                     $('.tv').show();
                 }
                 var formattedFps = parseFloat(data.fpsresult).toFixed(2);
                 $('#fpsCount').text(formattedFps + " FPS");
                 $('#detectedObjects').text(data.dcountresult);
-                $('#frameSize').text(data.fsizeresult);
+                {#$('#frameSize').text(data.fsizeresult);#}
                 $('#inferenceTime').text(data.inferenceTimes);
                 $('#resultPath').html("<a target='_blank' href='" + data.resultPath + "'>link</a>");
             }

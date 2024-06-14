@@ -24,6 +24,7 @@ from utils.general import (LOGGER, Profile, check_file, check_img_size, check_im
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
 
+videoIDReal = set()
 
 def initialize_deepsort():
     # Create the Deep SORT configuration object and load settings from the YAML file
@@ -71,13 +72,34 @@ def colorLabels(classid):
         color = (200, 100, 0)
     return tuple(color)
 
+COCONUTS_CLASS_ID = 0
+
+
+def filter_detections_by_class(bbox_xyxy, identities, categories, target_class_id):
+    filtered_bbox_xyxy = []
+    filtered_identities = []
+    filtered_categories = []
+
+    for i, cat in enumerate(categories):
+        if cat == target_class_id:
+            filtered_bbox_xyxy.append(bbox_xyxy[i])
+            filtered_identities.append(identities[i])
+            filtered_categories.append(categories[i])
+
+    return filtered_bbox_xyxy, filtered_identities, filtered_categories
 
 def draw_boxes(frame, bbox_xyxy, draw_trails, identities=None, categories=None, offset=(0, 0)):
+    global videoIDReal
     height, width, _ = frame.shape
+
+    # Filter detections to only include "coconuts"
+    bbox_xyxy, identities, categories = filter_detections_by_class(bbox_xyxy, identities, categories, COCONUTS_CLASS_ID)
+
     for key in list(data_deque):
         if key not in identities:
             data_deque.pop(key)
 
+    videoCountTemp = []
     for i, box in enumerate(bbox_xyxy):
         x1, y1, x2, y2 = [int(i) for i in box]
         x1 += offset[0]
@@ -98,17 +120,21 @@ def draw_boxes(frame, bbox_xyxy, draw_trails, identities=None, categories=None, 
         c2 = x1 + text_size[0], y1 - text_size[1] - 3
         cv2.rectangle(frame, (x1, y1), c2, color, -1)
         cv2.putText(frame, label, (x1, y1 - 2), 0, 0.5, [255, 255, 255], thickness=1, lineType=cv2.LINE_AA)
-        cv2.circle(frame, center, 2, (0, 0, 255), cv2.FILLED)
+        cv2.circle(frame, center, 5, (0, 0, 255), cv2.FILLED)
         if draw_trails:
-            for i in range(1, len(data_deque[id])):
-                if data_deque[id][i - 1] is None or data_deque[id][i] is None:
+            for j in range(1, len(data_deque[id])):
+                if data_deque[id][j - 1] is None or data_deque[id][j] is None:
                     continue
-                thickness = int(np.sqrt(64 / float(i + i)) * 1.5)
-                cv2.line(frame, data_deque[id][i - 1], data_deque[id][i], color, thickness)
+                thickness = int(np.sqrt(64 / float(j + j)) * 1.5)
+                cv2.line(frame, data_deque[id][j - 1], data_deque[id][j], color, thickness)
+        # print(f"ID: {id}, BBox: {x1, y1, x2, y2}")
+        videoCountTemp.append(id)
 
-    detection_text = f"Total Detections: {int(identities[-1])}"
-    cv2.putText(frame, detection_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-    return frame, int(identities[-1])
+    if identities is not None and len(identities) > 0:
+        detection_text = f"Total Detections: {len(videoIDReal)}"
+        cv2.putText(frame, detection_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+
+    return frame, identities
 
 
 @smart_inference_mode()
@@ -172,6 +198,7 @@ def run(
     # Run inference
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
+
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
             im = torch.from_numpy(im).to(model.device)
@@ -191,6 +218,7 @@ def run(
             pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
 
         frameRate = 0
+        videoCountTemp = []
         for i, det in enumerate(pred):  # per image
             seen += 1
             if webcam:
@@ -205,7 +233,6 @@ def run(
             s += '%gx%g ' % im.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             ims = im0.copy()
-            videoCount = 0
             if len(det):
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
                 for c in det[:, 5].unique():
@@ -250,7 +277,9 @@ def run(
                         bbox_xyxy = outputs[:, :4]
                         identities = outputs[:, -2]
                         object_id = outputs[:, -1]
-                        im0,videoCount = draw_boxes(im0, bbox_xyxy, draw_trails, identities, object_id)
+                        im0,videoCountTemp = draw_boxes(im0, bbox_xyxy, draw_trails, identities, object_id)
+                        print(videoCountTemp)
+                        videoIDReal.update(videoCountTemp)
 
                 ctime = time.time()
                 fps = 1 / (ctime - ptime)
@@ -277,7 +306,7 @@ def run(
             if dataset.mode == 'image':
                 totalDetections = len(det)
             else:
-                totalDetections = videoCount
+                totalDetections = len(videoIDReal)
         timeInf = dt[1].dt
         inferenceTime = f"{timeInf:.1f} s"
         yield im0, frameRate, im0.shape, totalDetections, inferenceTime, filePath, dataset.mode
