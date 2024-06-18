@@ -1,5 +1,6 @@
 # CoconuTree Counting (Final Project The Woz)
-Project Overview 
+
+## Project Overview 
 This project developed an automated system to count coconut trees using YOLO v9 object detection technology from aerial imagery. High-resolution aerial photos were collected using drones over coconut plantations. These images were pre-processed and manually annotated to create a dataset for training the YOLO v9 model. The trained model was evaluated using metrics such as Precision, Recall, and Mean Average Precision (mAP), showing high performance with mAP > 90%. The model was then integrated into an automated system for real-time image analysis, enabling quick and accurate counting of coconut trees in new images captured by drones. The results of this project demonstrate that YOLO v9 is effective for detecting and counting coconut trees from aerial imagery, and this implementation can improve the efficiency of coconut plantation management through automated counting processes. Future steps include enhancing the model with more data, developing additional features, and conducting field tests in various locations with different environmental conditions.
 
 ## Method
@@ -13,11 +14,17 @@ The output from a process where a number of overlapping photos (e.g. from a dron
 <img width="478" alt="image" src="https://github.com/alnybera/CoconuTree_final-project/assets/163568585/d0d5f2d3-9574-4b48-98f6-93808d295552">
 
 ## Training & Optimization
-Arsitektur  : YOLO V9
+Arsitektur : YOLO V9
+
 Epoch : 30
+
 Batch size : 8
+
 Image size: 640x640px
+
 Advanced analytics : Non-Maximum Suppression (NMS) & Deep sort (tracking)
+
+<img width="230" alt="image" src="https://github.com/alnybera/CoconuTree_final-project/assets/163568585/735223c4-24a8-47b2-a6e9-f279531c0220">
 
 lr0: 0.01  # initial learning rate (SGD=1E-2, Adam=1E-3)
 lrf: 0.01  # final OneCycleLR learning rate (lr0 * lrf)
@@ -52,17 +59,21 @@ copy_paste: 0.3  # segment copy-paste (probability)
 
 ## Evaluation
 mAP (Mean Average Precision) from validation data.
+
 50    : 0,975  
 50-95 : 0,951
-<img width="1166" alt="image" src="https://github.com/alnybera/CoconuTree_final-project/assets/163568585/9d186c5f-6ffa-4d8a-901c-d564607bac72">
+ 
 
 Precision Curve:
+
 <img width="240" alt="image" src="https://github.com/alnybera/CoconuTree_final-project/assets/163568585/d8f22dd5-4c9b-46d8-9cfb-aac20847915e">
-
+  
 Recall Curve:
-<img width="247" alt="image" src="https://github.com/alnybera/CoconuTree_final-project/assets/163568585/6a6459ae-56f7-493e-8247-201e251aed5f">
 
+<img width="247" alt="image" src="https://github.com/alnybera/CoconuTree_final-project/assets/163568585/6a6459ae-56f7-493e-8247-201e251aed5f">
+  
 Precision - Recall Curve:
+
 <img width="243" alt="image" src="https://github.com/alnybera/CoconuTree_final-project/assets/163568585/9ceebb53-b2b0-4f6d-a69d-dcd4191e3e6c">
 
 ## Testing
@@ -73,10 +84,14 @@ Improve the coconut tree counting model by adding samples of smaller plants (imm
 
 ## Acknowledgements
 Team : The Woz
+
 ADITYA LESMANA
+
 BERNADETTA ALNYBERA F
+
 C YONGKY PRANOWO
-BERNADETTA A F
+
+IBNU FARKHAN
 
 <details><summary> <b>Expand</b> </summary>
 
